@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT Video Stream</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+    <script type="text/javascript">
+        // MQTT Broker and topic
+        var mqttBroker = "test.mosquitto.org";
+        var mqttTopic = "/taufik/video_transmit";
+
+        // Create a MQTT client instance
+        var client = new Paho.MQTT.Client(mqttBroker, Number(8080), "clientId-" + parseInt(Math.random() * 100, 10));
+
+        // Callback function to handle incoming MQTT messages
+        function onMessageArrived(message) {
+            // console.log(message.payloadString)
+            // Convert the received base64 image back to bytes
+            var imageBase64 = message.payloadString;
+            var imageBytes = atob(imageBase64);
+
+            // Convert bytes to ArrayBuffer
+            var buffer = new ArrayBuffer(imageBytes.length);
+            var view = new Uint8Array(buffer);
+            for (var i = 0; i < imageBytes.length; i++) {
+                view[i] = imageBytes.charCodeAt(i);
+            }
+
+            // Convert ArrayBuffer to Blob
+            var blob = new Blob([buffer], { type: 'image/jpeg' });
+
+            // Create an image element to display the image
+            var img = document.getElementById('video_feed');
+            img.src = URL.createObjectURL(blob);
+        }
+
+        // Set callback function for when the client receives a message
+        client.onMessageArrived = onMessageArrived;
+
+        // Connect to MQTT broker
+        client.connect({
+            onSuccess: function () {
+                // Subscribe to the MQTT topic
+                console.log("connected")
+                client.subscribe(mqttTopic);
+            },
+            onFailure: function (message) {
+                console.log("Connection failed: " + message.errorMessage);
+            }
+        });
+
+    </script>
+</head>
+
+<body>
+    <h1>MQTT Video Stream</h1>
+    <img id="video_feed" src="" width="800" height="600" />
+</body>
+
+</html>
