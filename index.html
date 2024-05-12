@@ -8,11 +8,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
     <script type="text/javascript">
         // MQTT Broker and topic
-        var mqttBroker = "broker.hivemq.com";
+        var mqttBroker = "test.mosquitto.org";
         var mqttTopic = "/taufik/video_transmit";
 
         // Create a MQTT client instance
-        var client = new Paho.MQTT.Client(mqttBroker, Number(8080), "clientId-" + parseInt(Math.random() * 100, 10));
+        var client = new Paho.MQTT.Client(mqttBroker, Number(8081), "clientId-" + parseInt(Math.random() * 100, 10));
 
         // Callback function to handle incoming MQTT messages
         function onMessageArrived(message) {
